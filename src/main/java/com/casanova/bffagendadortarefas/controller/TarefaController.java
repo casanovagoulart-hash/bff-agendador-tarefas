@@ -1,7 +1,8 @@
 package com.casanova.bffagendadortarefas.controller;
 
 import com.casanova.bffagendadortarefas.business.TarefaService;
-import com.casanova.bffagendadortarefas.business.dto.TarefaDTO;
+import com.casanova.bffagendadortarefas.business.dto.In.TarefaDTORequest;
+import com.casanova.bffagendadortarefas.business.dto.Out.TarefaDTOResponse;
 import com.casanova.bffagendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import com.casanova.bffagendadortarefas.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +37,8 @@ public class TarefaController {
     @Operation(summary = "Salvar Tarefa", description = "Cria uma nova tarefa para o usuário autenticado")
     @ApiResponse(responseCode = "200", description = "Tarefa salva com sucesso")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public ResponseEntity<TarefaDTO> gravaTarefa(@RequestBody TarefaDTO dto,
-                                                 @RequestHeader(name = "Authorization", required = false) String token) {
+    public ResponseEntity<TarefaDTOResponse> gravaTarefa(@RequestBody TarefaDTORequest dto,
+                                                         @RequestHeader(name = "Authorization", required = false) String token) {
         return ResponseEntity.ok(tarefaService.gravaTarefa(token, dto));
     }
 
@@ -48,7 +49,7 @@ public class TarefaController {
     @Operation(summary = "Busca tarefas por período", description = "Busca tarefas cadastradas em um intervalo de datas")
     @ApiResponse(responseCode = "200", description = "Tarefas encontradas com sucesso")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public ResponseEntity<List<TarefaDTO>> buscaTarefasAgendadasPorPeriodo(
+    public ResponseEntity<List<TarefaDTOResponse>> buscaTarefasAgendadasPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicial,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFinal,
             @RequestHeader(name = "Authorization", required = false) String token) {
@@ -62,8 +63,8 @@ public class TarefaController {
     @Operation(summary = "Busca tarefas do usuário", description = "Busca todas as tarefas agendadas do usuário autenticado")
     @ApiResponse(responseCode = "200", description = "Tarefas encontradas")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public ResponseEntity<List<TarefaDTO>> buscaTarefasAgendadasPorUsuario(@RequestHeader(name = "Authorization", required = false) String token) {
-        List<TarefaDTO> tarefas = tarefaService.buscaTarefasAgendadasPorUsuario(token);
+    public ResponseEntity<List<TarefaDTOResponse>> buscaTarefasAgendadasPorUsuario(@RequestHeader(name = "Authorization", required = false) String token) {
+        List<TarefaDTOResponse> tarefas = tarefaService.buscaTarefasAgendadasPorUsuario(token);
         return ResponseEntity.ok(tarefas);
     }
 
@@ -74,9 +75,9 @@ public class TarefaController {
     @Operation(summary = "Busca tarefas por e-mail", description = "Busca tarefas filtrando pelo e-mail do usuário")
     @ApiResponse(responseCode = "200", description = "Tarefas encontradas")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public ResponseEntity<List<TarefaDTO>> buscaTarefaPorEmail(@RequestParam("email") String email,
-                                                               @RequestHeader(name = "Authorization", required = false) String token) {
-        List<TarefaDTO> tarefas = tarefaService.buscaTarefaPorEmail(email, token);
+    public ResponseEntity<List<TarefaDTOResponse>> buscaTarefaPorEmail(@RequestParam("email") String email,
+                                                                       @RequestHeader(name = "Authorization", required = false) String token) {
+        List<TarefaDTOResponse> tarefas = tarefaService.buscaTarefaPorEmail(email, token);
         return ResponseEntity.ok(tarefas);
     }
 
@@ -99,9 +100,9 @@ public class TarefaController {
     @PatchMapping
     @Operation(summary = "Altera status de notificação", description = "Atualiza o status de notificação de uma tarefa")
     @ApiResponse(responseCode = "200", description = "Status alterado com sucesso")
-    public ResponseEntity<TarefaDTO> alteraStatusNotificacao(@RequestParam("status") StatusNotificacaoEnum status,
-                                                             @RequestParam("id") String id,
-                                                             @RequestHeader(name = "Authorization", required = false) String token) {
+    public ResponseEntity<TarefaDTOResponse> alteraStatusNotificacao(@RequestParam("status") StatusNotificacaoEnum status,
+                                                                     @RequestParam("id") String id,
+                                                                     @RequestHeader(name = "Authorization", required = false) String token) {
         return ResponseEntity.ok(tarefaService.alteraStatus(status, id, token));
     }
 
@@ -111,9 +112,9 @@ public class TarefaController {
     @PutMapping
     @Operation(summary = "Atualiza tarefa", description = "Atualiza os dados de uma tarefa existente")
     @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso")
-    public ResponseEntity<TarefaDTO> atualizaTarefa(@RequestBody TarefaDTO dto,
-                                                    @RequestParam("id") String id,
-                                                    @RequestHeader(name = "Authorization", required = false) String token) {
+    public ResponseEntity<TarefaDTOResponse> atualizaTarefa(@RequestBody TarefaDTOResponse dto,
+                                                            @RequestParam("id") String id,
+                                                            @RequestHeader(name = "Authorization", required = false) String token) {
         return ResponseEntity.ok(tarefaService.atualizaTarefa(dto, id, token));
     }
 

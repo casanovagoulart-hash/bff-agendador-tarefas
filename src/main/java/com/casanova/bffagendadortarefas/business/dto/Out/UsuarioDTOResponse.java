@@ -1,8 +1,6 @@
-package com.casanova.bffagendadortarefas.business.dto;;
+package com.casanova.bffagendadortarefas.business.dto.Out;;
 
 import lombok.*;
-
-import java.util.List;
 
 // Lombok: gera getters, setters, construtores e builder automaticamente
 // @NoArgsConstructor: o Jackson precisa de um construtor vazio para montar o objeto a partir do JSON
@@ -11,10 +9,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioDTO {
+public class UsuarioDTOResponse {
 
-    private Long id;
-    private String nome;
     private String email;
     private String senha;
 }

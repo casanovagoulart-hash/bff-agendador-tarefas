@@ -1,4 +1,4 @@
-package com.casanova.bffagendadortarefas.business.dto;
+package com.casanova.bffagendadortarefas.business.dto.Out;
 
 import com.casanova.bffagendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TarefaDTO {
-    private String id;
+public class TarefaDTOResponse {
     private String nomeTarefa;
     private String descrIcao;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
