@@ -1,8 +1,12 @@
 package com.casanova.bffagendadortarefas.business;
 
-import com.casanova.bffagendadortarefas.business.dto.EnderecoDTO;
-import com.casanova.bffagendadortarefas.business.dto.TelefoneDTO;
-import com.casanova.bffagendadortarefas.business.dto.UsuarioDTO;
+import com.casanova.bffagendadortarefas.business.dto.In.EnderecoDTORequest;
+import com.casanova.bffagendadortarefas.business.dto.In.LoginRequestDTO;
+import com.casanova.bffagendadortarefas.business.dto.In.TelefoneDTORequest;
+import com.casanova.bffagendadortarefas.business.dto.In.UsuarioDTORequest;
+import com.casanova.bffagendadortarefas.business.dto.Out.EnderecoDTOResponse;
+import com.casanova.bffagendadortarefas.business.dto.Out.TelefoneDTOResponse;
+import com.casanova.bffagendadortarefas.business.dto.Out.UsuarioDTOResponse;
 import com.casanova.bffagendadortarefas.infrastructure.client.UsuarioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,21 +21,21 @@ public class UsuarioService {
     /**
      * Encaminha os dados para o microsserviço criar e salvar um novo usuário no sistema.
      */
-    public UsuarioDTO salvaUsuario(UsuarioDTO usuarioDTO) {
+    public UsuarioDTOResponse salvaUsuario(UsuarioDTORequest usuarioDTO) {
         return client.salvaUsuario(usuarioDTO).getBody();
     }
 
     /**
      * Realiza a autenticação do usuário, repassando as credenciais e retornando o token JWT.
      */
-    public String loginUsuario(UsuarioDTO usuarioDTO) {
-        return client.login(usuarioDTO);
+    public String loginUsuario(LoginRequestDTO dto) {
+        return client.login(dto);
     }
 
     /**
      * Atualiza os dados cadastrais do usuário autenticado, validando via token JWT.
      */
-    public UsuarioDTO atualizaDadosUsuario(String token, UsuarioDTO dto) {
+    public UsuarioDTOResponse atualizaDadosUsuario(String token, UsuarioDTORequest dto) {
         return client.atualizaDadosUsuario(dto, token);
     }
 
@@ -39,7 +43,7 @@ public class UsuarioService {
      * Busca os dados de um usuário específico filtrando por e-mail (requer token de acesso).
      */
 
-    public UsuarioDTO buscaUsuarioporEmail(String email, String token) {
+    public UsuarioDTOResponse buscaUsuarioPorEmail(String email, String token) {
         return client.buscaUsuarioPorEmail(email, token);
     }
 
@@ -54,14 +58,14 @@ public class UsuarioService {
     /**
      * Atualiza as informações de um endereço específico do usuário através do seu ID.
      */
-    public EnderecoDTO atualizaEndereco(Long idEndereco, EnderecoDTO enderecoDTO, String token) {
+    public EnderecoDTOResponse atualizaEndereco(Long idEndereco, EnderecoDTORequest enderecoDTO, String token) {
         return client.atualizaEndereco(enderecoDTO, idEndereco, token);
     }
 
     /**
      * Atualiza as informações de um telefone específico do usuário através do seu ID.
      */
-    public TelefoneDTO atualizaTelefone(Long idTelefone, TelefoneDTO dto, String token) {
+    public TelefoneDTOResponse atualizaTelefone(Long idTelefone, TelefoneDTORequest dto, String token) {
         return client.atualizaTelefone(dto, idTelefone, token);
     }
 
