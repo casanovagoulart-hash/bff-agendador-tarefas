@@ -1,14 +1,15 @@
-/* package com.casanova.bffagendadortarefas.infrastructure.client;
+package com.casanova.bffagendadortarefas.infrastructure.client;
 
-import com.casanova.bffagendadortarefas.business.dto.Out.TarefaDTO;
+import com.casanova.bffagendadortarefas.business.dto.Out.TarefaDTOResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "notificacao", contextId = "notificacao", url = "${notificacao.url}")
+@FeignClient(name = "notificacao-service", url = "${notificacao.url}")
 public interface EmailClient {
 
-void enviarEmail(@RequestBody TarefaDTO dto);
-
+    @PostMapping
+    void enviarEmail(@RequestBody TarefaDTOResponse dto);
 
 }
-*/
+

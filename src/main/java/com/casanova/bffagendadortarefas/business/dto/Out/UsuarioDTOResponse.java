@@ -1,4 +1,4 @@
-package com.casanova.bffagendadortarefas.business.dto.Out;;
+package com.casanova.bffagendadortarefas.business.dto.Out;
 
 import lombok.*;
 
@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UsuarioDTOResponse {
 
+    private String nome;
     private String email;
     private String senha;
 }

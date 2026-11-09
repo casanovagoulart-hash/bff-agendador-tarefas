@@ -1,56 +1,92 @@
 package com.casanova.bffagendadortarefas.infrastructure.client;
 
+import com.casanova.bffagendadortarefas.business.dto.In.LoginRequestDTO;
 import com.casanova.bffagendadortarefas.business.dto.In.TarefaDTORequest;
 import com.casanova.bffagendadortarefas.business.dto.Out.TarefaDTOResponse;
 import com.casanova.bffagendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Feign Client responsável pela comunicação HTTP declarativa com o microsserviço de Tarefas.
- *
- * - name: Nome lógico do serviço no ecossistema.
- * - contextId: Identificador único obrigatório para evitar colisão de beans quando múltiplos
- *   clientes compartilham nomes ou propriedades semelhantes no Spring.
- * - url: Endereço dinâmico resolvido de forma segura via application.properties (${agendador-tarefas.url}).
+ * Interface OpenFeign responsável pela comunicação HTTP declarativa
+ * entre o BFF e o microsserviço Core de Tarefas.
  */
-@FeignClient(name = "tarefas-service", contextId = "tarefasClient", url = "${agendador-tarefas.url}")
+@FeignClient(name = "agendador-tarefas", url = "${agendador-tarefas.url}")
 public interface TarefasClient {
 
-    // Cada método exige rigorosamente um verbo HTTP mapeado para que o OpenFeign construa o contrato com sucesso.
-
-    @GetMapping("/tarefas")
-    List<TarefaDTOResponse> buscaTarefaPorEmail(@RequestParam("email") String email,
-                                                @RequestHeader(value = "Authorization", required=false) String token);
-
+    /**
+     * Envia os dados de uma nova tarefa para serem gravados no microsserviço Core.
+     */
     @PostMapping
-    TarefaDTOResponse gravaTarefa(@RequestBody TarefaDTORequest dto,
-                                  @RequestHeader(value = "Authorization", required=false) String token);
+    TarefaDTOResponse gravaTarefa(
+            @RequestBody TarefaDTORequest dto,
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
 
-    @GetMapping("/eventos")
+    /**
+     * Busca tarefas agendadas dentro de um intervalo específico de datas e horas.
+     */
+    @GetMapping("/periodo")
     List<TarefaDTOResponse> buscaTarefasAgendadasPorPeriodo(
-            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime dataInicial,
-            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime dataFinal,
-            @RequestHeader(value = "Authorization", required=false) String token);
+            @RequestParam("dataInicial") LocalDateTime dataInicial,
+            @RequestParam("dataFinal") LocalDateTime dataFinal,
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
 
-    @GetMapping
-    List<TarefaDTOResponse> buscaTarefasAgendadasPorUsuario(@RequestHeader(value = "Authorization", required=false) String token);
+    /**
+     * Retorna todas as tarefas associadas ao usuário dono do token JWT enviado.
+     */
+    @GetMapping("/usuario")
+    List<TarefaDTOResponse> buscaTarefasAgendadasPorUsuario(
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
 
-    @DeleteMapping
-    void deletaTarefaPorId(@RequestParam("id") String id,
-                           @RequestHeader(value = "Authorization", required=false) String token);
+    /**
+     * Busca tarefas filtrando diretamente pelo e-mail do usuário.
+     */
+    @GetMapping("/email")
+    List<TarefaDTOResponse> buscaTarefaPorEmail(
+            @RequestParam("email") String email,
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
 
-    @PatchMapping
-    TarefaDTOResponse alteraStatusNotificacao(@RequestParam("status") StatusNotificacaoEnum status,
-                                              @RequestParam("id") String id,
-                                              @RequestHeader(value = "Authorization", required=false) String token);
+    /**
+     * Remove uma tarefa do sistema com base no seu ID único.
+     */
+    @DeleteMapping("/{id}")
+    void deletaTarefaPorId(
+            @PathVariable("id") String id,
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
 
-    @PutMapping
-    TarefaDTOResponse atualizaTarefa(@RequestBody TarefaDTOResponse dto,
-                                     @RequestParam("id") String id,
-                                     @RequestHeader(value = "Authorization", required=false) String token);
+    /**
+     * Altera o status de notificação de uma tarefa específica.
+     */
+    @PatchMapping("/{id}")
+    TarefaDTOResponse alteraStatusNotificacao(
+            @RequestParam("status") StatusNotificacaoEnum status,
+            @PathVariable("id") String id,
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
+
+    /**
+     * Atualiza os dados cadastrais de uma tarefa já existente.
+     */
+    @PutMapping("/{id}")
+    TarefaDTOResponse atualizaTarefa(
+            @RequestBody TarefaDTOResponse dto,
+            @PathVariable("id") String id,
+            @RequestHeader(value = "Authorization", required = false) String token
+    );
+
+    /**
+     * Realiza a autenticação interna do BFF junto ao microsserviço Core
+     * para obtenção de credenciais/tokens de sistema (utilizado no agendador Cron).
+     */
+    @PostMapping("/login")
+    String loginUsuario(@RequestBody LoginRequestDTO dto);
+
 }

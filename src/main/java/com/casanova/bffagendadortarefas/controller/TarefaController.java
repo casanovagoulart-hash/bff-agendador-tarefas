@@ -82,41 +82,39 @@ public class TarefaController {
     }
 
     /**
-     * Deleta uma tarefa específica com base no parâmetro 'id' passado na query string.
+     * Deleta uma tarefa específica recebendo o ID diretamente na URL (Path Variable).
      */
-    @DeleteMapping
-    @Operation(summary = "Deleta tarefa por ID", description = "Remove uma tarefa com base no ID informado")
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta tarefa por ID", description = "Remove uma tarefa com base no ID informado na URL")
     @ApiResponse(responseCode = "200", description = "Tarefa deletada com sucesso")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public ResponseEntity<Void> deletaTarefaPorId(@RequestParam("id") String id,
+    public ResponseEntity<Void> deletaTarefaPorId(@PathVariable("id") String id,
                                                   @RequestHeader(name = "Authorization", required = false) String token) {
         tarefaService.deletaTarefaPorId(id, token);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * Altera de forma parcial (PATCH) o status de notificação de uma tarefa.
+     * Altera de forma parcial (PATCH) o status de notificação de uma tarefa usando o ID na URL.
      */
-    @PatchMapping
-    @Operation(summary = "Altera status de notificação", description = "Atualiza o status de notificação de uma tarefa")
+    @PatchMapping("/{id}")
+    @Operation(summary = "Altera status de notificação", description = "Atualiza o status de notificação de uma tarefa pelo ID")
     @ApiResponse(responseCode = "200", description = "Status alterado com sucesso")
     public ResponseEntity<TarefaDTOResponse> alteraStatusNotificacao(@RequestParam("status") StatusNotificacaoEnum status,
-                                                                     @RequestParam("id") String id,
+                                                                     @PathVariable("id") String id,
                                                                      @RequestHeader(name = "Authorization", required = false) String token) {
         return ResponseEntity.ok(tarefaService.alteraStatus(status, id, token));
     }
 
     /**
-     * Atualiza os dados completos de uma tarefa existente através do verbo PUT.
+     * Atualiza os dados completos de uma tarefa existente através do verbo PUT informando o ID na URL.
      */
-    @PutMapping
-    @Operation(summary = "Atualiza tarefa", description = "Atualiza os dados de uma tarefa existente")
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualiza tarefa", description = "Atualiza os dados de uma tarefa existente pelo ID")
     @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso")
     public ResponseEntity<TarefaDTOResponse> atualizaTarefa(@RequestBody TarefaDTOResponse dto,
-                                                            @RequestParam("id") String id,
+                                                            @PathVariable("id") String id,
                                                             @RequestHeader(name = "Authorization", required = false) String token) {
         return ResponseEntity.ok(tarefaService.atualizaTarefa(dto, id, token));
     }
-
-
 }

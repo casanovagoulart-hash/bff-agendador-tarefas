@@ -1,5 +1,6 @@
 package com.casanova.bffagendadortarefas.business.dto.In;
 
+import com.casanova.bffagendadortarefas.business.dto.Out.TarefaDTOResponse;
 import com.casanova.bffagendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
