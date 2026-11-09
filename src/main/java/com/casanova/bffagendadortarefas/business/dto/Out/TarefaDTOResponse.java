@@ -1,8 +1,9 @@
-package com.casanova.bffagendadortarefas.business.dto;
+package com.casanova.bffagendadortarefas.business.dto.Out;
 
 import com.casanova.bffagendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Builder
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TarefaDTO {
+public class TarefaDTOResponse {
     private String id;
     private String nomeTarefa;
     private String descrIcao;
@@ -27,5 +28,6 @@ public class TarefaDTO {
     public void setEmail(String email) {
         this.emailUsuario = email;
     }
+
 }
 

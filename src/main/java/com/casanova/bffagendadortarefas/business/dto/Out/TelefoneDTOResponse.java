@@ -1,4 +1,4 @@
-package com.casanova.bffagendadortarefas.business.dto;
+package com.casanova.bffagendadortarefas.business.dto.Out;
 
 import lombok.*;
 
@@ -7,9 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TelefoneDTO {
+public class TelefoneDTOResponse {
 
-    private Long id;
+
     private String ddd;
     private String numero;
 }

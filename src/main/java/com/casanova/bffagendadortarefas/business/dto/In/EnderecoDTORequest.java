@@ -1,4 +1,4 @@
-package com.casanova.bffagendadortarefas.business.dto;
+package com.casanova.bffagendadortarefas.business.dto.In;
 
 
 import lombok.*;
@@ -8,9 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class EnderecoDTO {
+public class EnderecoDTORequest {
 
-    private Long id;
+
     private String rua;
     private Long numero;
     private String complemento;
