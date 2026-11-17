@@ -29,7 +29,8 @@ public class UsuarioController {
     @PostMapping
     @Operation(summary = "Salvar Usuários", description = "Cria um novo usuário")
     @ApiResponse(responseCode = "200", description = "Usuário salvo com sucesso")
-    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "409", description = "Dados inválidos")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public ResponseEntity<UsuarioDTOResponse> salvaUsuario(@RequestBody UsuarioDTORequest dtoRequest) {
         return ResponseEntity.ok(usuarioService.salvaUsuario(dtoRequest));
@@ -54,6 +55,8 @@ public class UsuarioController {
     @Operation(summary = "Buscar Usuários", description = "Busca um usuário pelo e-mail")
     @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "403", description = "Credenciais inválidas")
     @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public ResponseEntity<UsuarioDTOResponse> buscaUsuarioPorEmail(@RequestParam("email") String email,
@@ -69,7 +72,8 @@ public class UsuarioController {
     @Operation(summary = "Atualizar Usuários", description = "Atualiza os dados de um usuário")
     @ApiResponse(responseCode = "200", description = "Dados atualizados com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "403", description = "Usuário não encontrado")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public ResponseEntity<UsuarioDTOResponse> atualizaDadosUsuario(
             @RequestBody UsuarioDTORequest dto,
@@ -84,7 +88,8 @@ public class UsuarioController {
     @Operation(summary = "Atualizar Endereços", description = "Atualiza os dados de um endereço de um usuário")
     @ApiResponse(responseCode = "200", description = "Dados atualizados com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "404", description = "Endereço não encontrado")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "403", description = "Endereço não encontrado")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public ResponseEntity<EnderecoDTOResponse> atualizaEndereco(
             @RequestBody EnderecoDTORequest dto,
@@ -101,7 +106,8 @@ public class UsuarioController {
     @Operation(summary = "Atualizar Telefones", description = "Atualiza os dados de um telefone de um usuário")
     @ApiResponse(responseCode = "200", description = "Dados atualizados com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "404", description = "Telefone não encontrado")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "403", description = "Telefone não encontrado")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public ResponseEntity<TelefoneDTOResponse> atualizaTelefone(
             @RequestBody TelefoneDTORequest dto,
@@ -117,7 +123,8 @@ public class UsuarioController {
     @DeleteMapping("/{email}")
     @Operation(summary = "Deletar Usuários", description = "Deleta um usuário pelo e-mail")
     @ApiResponse(responseCode = "200", description = "Usuário deletado com sucesso")
-    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "403", description = "Usuário não encontrado")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public ResponseEntity<Void> deletaUsuarioPorEmail(@PathVariable String email,
                                                       @RequestHeader(name = "Authorization", required = false) String token) {
