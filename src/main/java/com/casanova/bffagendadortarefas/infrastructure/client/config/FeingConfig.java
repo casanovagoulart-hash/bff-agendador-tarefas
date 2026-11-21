@@ -12,5 +12,4 @@ public class FeingConfig {
         return new FeingError();
     }
 
-
 }

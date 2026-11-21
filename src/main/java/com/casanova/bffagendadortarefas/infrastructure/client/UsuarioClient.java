@@ -8,6 +8,7 @@ import com.casanova.bffagendadortarefas.business.dto.In.UsuarioDTORequest;
 import com.casanova.bffagendadortarefas.business.dto.Out.EnderecoDTOResponse;
 import com.casanova.bffagendadortarefas.business.dto.Out.TelefoneDTOResponse;
 import com.casanova.bffagendadortarefas.business.dto.Out.UsuarioDTOResponse;
+import com.casanova.bffagendadortarefas.business.dto.Out.ViaCepDTOResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,5 +70,8 @@ public interface UsuarioClient {
     void deletaUsuarioPorEmail(@PathVariable String email,
                                @RequestHeader(value = "Authorization", required = false) String token);
 
+
+    @GetMapping("/usuario/endereco/{cep}") // Alinhado com @RequestMapping("/usuario") + @GetMapping("/endereco/{cep}")
+    ViaCepDTOResponse buscaDadosCep(@PathVariable("cep") String cep);
 
 }
