@@ -71,7 +71,7 @@ public class UsuarioService {
     }
 
     public ViaCepDTOResponse buscarEnderecoPorCep(String cep) {
-        return client.buscarDadosCep(cep);
+        return client.buscaDadosCep(cep);
     }
 
 }
