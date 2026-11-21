@@ -12,22 +12,30 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TarefaDTOResponse {
+
     private String id;
     private String nomeTarefa;
-    private String descrIcao;
+
+    // CORREÇÃO: Padronizado para 'descricao' (mesmo motivo do Request)
+    private String descricao;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime dataCriacao;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime dataEvento;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+
+    // CORREÇÃO: Removido @JsonFormat deste campo, pois 'emailUsuario' é String e não data
     private String emailUsuario;
-    private LocalDateTime dataAteracao;
+
+    // CORREÇÃO: Corrigido o typo 'dataAteracao' -> 'dataAlteracao' e aplicada a máscara de data
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime dataAlteracao;
+
+    // CORREÇÃO: Removido @JsonFormat deste campo, pois é um Enum
     private StatusNotificacaoEnum statusNotificacaoEnum;
 
     public void setEmail(String email) {
         this.emailUsuario = email;
     }
-
 }
-

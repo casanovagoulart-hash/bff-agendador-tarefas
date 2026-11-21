@@ -1,11 +1,11 @@
-package com.javanauta.usuariogradlegroovy.infrastructure.exceptions;
+package com.casanova.bffagendadortarefas.infrastructure.exceptions;
 
-public class IllegalArgumentExceptions extends RuntimeException {
-    public IllegalArgumentExceptions(String message) {
+public class IllegalArgumentException extends RuntimeException {
+    public IllegalArgumentException(String message) {
         super(message);
     }
 
-public IllegalArgumentExceptions(String message, Throwable throwable) {
+public IllegalArgumentException(String message, Throwable throwable) {
         super(message, throwable);
 }
 

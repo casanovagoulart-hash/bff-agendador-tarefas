@@ -1,59 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>4.1.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
+
 	<groupId>com.casanova</groupId>
 	<artifactId>bff-agendador-tarefas</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+	<name>bff-agendador-tarefas</name>
+	<description>BFF Orquestrador de Agendamento de Tarefas</description>
+
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2025.1.4</spring-cloud.version>
 	</properties>
+
 	<dependencies>
+		<!-- Monitoramento e Healthcheck (útil para Docker Compose) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+		<!-- Documentação OpenAPI / Swagger UI compatível com Spring MVC -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>3.2.0</version>
-			<scope>compile</scope>
 		</dependency>
 
+		<!-- Segurança e Filtros JWT -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+
+		<!-- Stack Web Servlet (Spring MVC) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+
+		<!-- Cliente HTTP declarativo para comunicação entre microsserviços -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+
+		<!--
+            ARGUMENTO DIDÁTICO: Adicionado 'feign-hc5' diretamente nas dependências.
+            No seu pom.xml original, 'feign-hc5' estava apenas dentro de <dependencyManagement>,
+            o que só define a versão, mas NÃO baixa o JAR para o projeto.
+            Ele é obrigatório para suportar requisições HTTP PATCH (usadas em alteraStatusNotificacao),
+            já que o HttpURLConnection padrão do Java não aceita o verbo PATCH nativamente.
+        -->
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-hc5</artifactId>
+			<version>13.14</version>
 		</dependency>
 
 		<dependency>
@@ -62,31 +75,13 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 		<!-- Dependências do JWT (JJWT 0.13.0) -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -106,7 +101,32 @@
 			<scope>runtime</scope>
 		</dependency>
 
-    </dependencies>
+		<!-- Dependências de Teste -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!--
+            CORREÇÃO: Removido 'spring-boot-starter-data-jpa-test'.
+            Como o BFF é stateless e você excluiu DataSourceAutoConfiguration e
+            HibernateJpaAutoConfiguration no application.properties, manter JPA nos testes
+            faz o contexto de teste falhar por falta de driver de banco de dados.
+        -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -117,29 +137,23 @@
 				<scope>import</scope>
 			</dependency>
 
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webflux</artifactId>
-				<version>7.0.10</version>
-				<scope>compile</scope>
-			</dependency>
+			<!--
+                CORREÇÃO: Removido 'spring-webflux' do dependencyManagement.
+                O projeto utiliza Spring MVC (bloqueante) e OpenFeign. Misturar WebFlux
+                com WebMVC pode causar conflitos de auto-configuração no Spring Boot e no SpringDoc.
+            -->
 
 			<dependency>
 				<groupId>io.github.openfeign</groupId>
 				<artifactId>feign-core</artifactId>
 				<version>13.17</version>
-				<scope>compile</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>io.github.openfeign</groupId>
 				<artifactId>feign-hc5</artifactId>
 				<version>13.17</version>
-				<scope>compile</scope>
 			</dependency>
-
 		</dependencies>
-
 	</dependencyManagement>
 
 	<build>
@@ -147,7 +161,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!-- Garante que o Lombok não seja empacotado no JAR final -->
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

@@ -8,6 +8,7 @@ import com.casanova.bffagendadortarefas.business.dto.In.UsuarioDTORequest;
 import com.casanova.bffagendadortarefas.business.dto.Out.EnderecoDTOResponse;
 import com.casanova.bffagendadortarefas.business.dto.Out.TelefoneDTOResponse;
 import com.casanova.bffagendadortarefas.business.dto.Out.UsuarioDTOResponse;
+import com.casanova.bffagendadortarefas.business.dto.Out.ViaCepDTOResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -132,4 +133,19 @@ public class UsuarioController {
         usuarioService.deleteUsuarioPorEmail(email, token);
         return ResponseEntity.ok().build();
     }
+
+
+    @GetMapping("/endereco/{cep}")
+    @Operation(summary = "Busca endereço pelo cep",
+            description = "Busca dados de cep de um usuário")
+    @ApiResponse(responseCode = "200", description = "Dados de endereço retornados com sucesso")
+    @ApiResponse(responseCode = "400", description = "CEP inválidos")
+    @ApiResponse(responseCode = "401", description = "CEP inválidas")
+    @ApiResponse(responseCode = "403", description = "CEP não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    public ResponseEntity<ViaCepDTOResponse> buscarEnderco(@PathVariable ("cep") String cep){
+
+        return ResponseEntity.ok(usuarioService.buscarEnderecoPorCep(cep));
+    }
+
 }

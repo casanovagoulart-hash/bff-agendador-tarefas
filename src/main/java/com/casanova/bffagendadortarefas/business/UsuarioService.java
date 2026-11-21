@@ -7,6 +7,7 @@ import com.casanova.bffagendadortarefas.business.dto.In.UsuarioDTORequest;
 import com.casanova.bffagendadortarefas.business.dto.Out.EnderecoDTOResponse;
 import com.casanova.bffagendadortarefas.business.dto.Out.TelefoneDTOResponse;
 import com.casanova.bffagendadortarefas.business.dto.Out.UsuarioDTOResponse;
+import com.casanova.bffagendadortarefas.business.dto.Out.ViaCepDTOResponse;
 import com.casanova.bffagendadortarefas.infrastructure.client.UsuarioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,10 @@ public class UsuarioService {
      */
     public TelefoneDTOResponse atualizaTelefone(Long idTelefone, TelefoneDTORequest dto, String token) {
         return client.atualizaTelefone(dto, idTelefone, token);
+    }
+
+    public ViaCepDTOResponse buscarEnderecoPorCep(String cep) {
+        return client.buscarDadosCep(cep);
     }
 
 }
