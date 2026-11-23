@@ -7,7 +7,6 @@ import com.casanova.bffagendadortarefas.infrastructure.enums.StatusNotificacaoEn
 import com.casanova.bffagendadortarefas.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Controller responsável por expor os endpoints REST do BFF (Backend for Frontend)
- * focados no gerenciamento e agendamento de tarefas dos usuários.
- */
 @RestController
 @RequestMapping("/tarefas")
 @RequiredArgsConstructor
@@ -31,9 +26,6 @@ public class TarefaController {
 
     private final TarefaService tarefaService;
 
-    /**
-     * Recebe a requisição para persistir uma nova tarefa, validando o token JWT no header.
-     */
     @PostMapping
     @Operation(summary = "Salvar Tarefa", description = "Cria uma nova tarefa para o usuário autenticado")
     @ApiResponse(responseCode = "200", description = "Tarefa salva com sucesso")
@@ -45,9 +37,6 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.gravaTarefa(token, dto));
     }
 
-    /**
-     * Busca tarefas agendadas filtrando por um intervalo de datas (período).
-     */
     @GetMapping("/eventos")
     @Operation(summary = "Busca tarefas por período", description = "Busca tarefas cadastradas em um intervalo de datas")
     @ApiResponse(responseCode = "200", description = "Tarefas encontradas com sucesso")
@@ -61,9 +50,6 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.buscaTarefasAgendadasPorPeriodo(dataInicial, dataFinal, token));
     }
 
-    /**
-     * Recupera a lista de tarefas associadas ao usuário dono do token JWT enviado.
-     */
     @GetMapping
     @Operation(summary = "Busca tarefas do usuário", description = "Busca todas as tarefas agendadas do usuário autenticado")
     @ApiResponse(responseCode = "200", description = "Tarefas encontradas")
@@ -71,28 +57,21 @@ public class TarefaController {
     @ApiResponse(responseCode = "403", description = "Usuário não encontrado.")
     @ApiResponse(responseCode = "401", description = "Usuário não autorizado.")
     public ResponseEntity<List<TarefaDTOResponse>> buscaTarefasAgendadasPorUsuario(@RequestHeader(name = "Authorization", required = false) String token) {
-        List<TarefaDTOResponse> tarefas = tarefaService.buscaTarefasAgendadasPorUsuario(token);
-        return ResponseEntity.ok(tarefas);
+        return ResponseEntity.ok(tarefaService.buscaTarefasAgendadasPorUsuario(token));
     }
 
-    /**
-     * Endpoint específico mapeado em /email para evitar colisão com o GET raiz de listagem de tarefas.
-     */
     @GetMapping("/email")
     @Operation(summary = "Busca tarefas por e-mail", description = "Busca tarefas filtrando pelo e-mail do usuário")
     @ApiResponse(responseCode = "200", description = "Tarefas encontradas")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     @ApiResponse(responseCode = "403", description = "E-mail não encontrado.")
-    @ApiResponse(responseCode = "4          01", description = "Usuário não autorizado.")
+    // CORREÇÃO: Removidos espaços extras em "401" para exibição correta no Swagger UI
+    @ApiResponse(responseCode = "401", description = "Usuário não autorizado.")
     public ResponseEntity<List<TarefaDTOResponse>> buscaTarefaPorEmail(@RequestParam("email") String email,
                                                                        @RequestHeader(name = "Authorization", required = false) String token) {
-        List<TarefaDTOResponse> tarefas = tarefaService.buscaTarefaPorEmail(email, token);
-        return ResponseEntity.ok(tarefas);
+        return ResponseEntity.ok(tarefaService.buscaTarefaPorEmail(email, token));
     }
 
-    /**
-     * Deleta uma tarefa específica recebendo o ID diretamente na URL (Path Variable).
-     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta tarefa por ID", description = "Remove uma tarefa com base no ID informado na URL")
     @ApiResponse(responseCode = "200", description = "Tarefa deletada com sucesso")
@@ -105,9 +84,6 @@ public class TarefaController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Altera de forma parcial (PATCH) o status de notificação de uma tarefa usando o ID na URL.
-     */
     @PatchMapping("/{id}")
     @Operation(summary = "Altera status de notificação", description = "Atualiza o status de notificação de uma tarefa pelo ID")
     @ApiResponse(responseCode = "200", description = "Status alterado com sucesso")
@@ -120,16 +96,14 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.alteraStatus(status, id, token));
     }
 
-    /**
-     * Atualiza os dados completos de uma tarefa existente através do verbo PUT informando o ID na URL.
-     */
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza tarefa", description = "Atualiza os dados de uma tarefa existente pelo ID")
     @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso")
     @ApiResponse(responseCode = "500", description = "Erro de servidor.")
     @ApiResponse(responseCode = "403", description = "Tarefa id não encontrada.")
     @ApiResponse(responseCode = "401", description = "Usuário não autorizado.")
-    public ResponseEntity<TarefaDTOResponse> atualizaTarefa(@RequestBody TarefaDTOResponse dto,
+    // CORREÇÃO: Alterado o @RequestBody de TarefaDTOResponse para TarefaDTORequest
+    public ResponseEntity<TarefaDTOResponse> atualizaTarefa(@RequestBody TarefaDTORequest dto,
                                                             @PathVariable("id") String id,
                                                             @RequestHeader(name = "Authorization", required = false) String token) {
         return ResponseEntity.ok(tarefaService.atualizaTarefa(dto, id, token));
