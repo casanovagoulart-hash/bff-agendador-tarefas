@@ -53,7 +53,7 @@ services:
       - backend-net
 
   agendadortarefas:
-    build: ../agendadortarefas
+    build: ../agendador-tarefas
     container_name: agendador-service
     expose:
       - "8081"
