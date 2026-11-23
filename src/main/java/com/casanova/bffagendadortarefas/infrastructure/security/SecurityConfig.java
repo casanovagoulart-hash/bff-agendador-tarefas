@@ -29,6 +29,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(
+                                "/admin/**",
+                                "/api/admin/**",
+                                "/api/v1/users/export",
+                                "/actuator/env",
+                                "/.env"
+                        ).permitAll()
+
+
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
@@ -43,6 +53,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
 
 }
