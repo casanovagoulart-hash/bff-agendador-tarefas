@@ -6,7 +6,7 @@ Além das regras de negócio, este projeto atua como um **laboratório prático 
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+##  Arquitetura do Sistema
 
 Toda a infraestrutura é containerizada e isolada em uma rede interna Docker (`backend-net`), expondo apenas a porta de entrada do BFF (`8083`) para o exterior:
 
