@@ -60,7 +60,7 @@ Toda a infraestrutura é containerizada e isolada em uma rede interna Docker (`b
 
 ---
 
-##  Como Executar o Projeto (Docker Compose)
+## ️ Como Executar o Projeto (Docker Compose)
 
 ### 1. Pré-requisitos
 * **Docker Desktop** instalado e em execução.
@@ -100,4 +100,14 @@ O desenvolvimento, diagnóstico e endurecimento (*hardening*) deste ecossistema 
 * **IETF RFC 7518 (JSON Web Algorithms) & JJWT Documentation:** Requisitos mínimos de tamanho de chave (≥ 512 bits) para algoritmos HMAC-SHA512 e prevenção contra `WeakKeyException`.
 * **OWASP Cheat Sheet Series (Logging, JWT & IDOR):** Boas práticas para ocultação de hashes de senha nos DTOs de resposta, sanitização de logs contra injeção de quebras de linha e controle de acesso baseado no token.
 * **Docker & Compose Official Docs:** Construção otimizada com *Multi-Stage Builds*, cache de dependências (`--mount=type=cache`) e isolamento de redes *bridge*.
-* **Comunidade Stack Overflow:** Consulta de cenários práticos envolvendo precedência de variáveis de ambiente no Windows/Docker, mapeamento Jackson/Lombok e diagnóstico de rede entre containers.
+* **Comunidade Stack Overflow:** Consulta de cenários práticos envolvendo precedência de variáveis de ambiente no Windows/Docker, mapeamento Jackson/Lombok em DTOs e diagnóstico de rede entre containers.
+
+---
+
+##  Agradecimentos
+
+> *"Com grande dificuldade, desafios e momentos frustrantes, mas com **GRATIDÃO A DEUS** pela fé, capacitação, discernimento, perseverança e resiliência, sustentados pelo amor de uma família maravilhosa."*
+
+* **A Deus:** Pela força, clareza e perseverança nos momentos mais desafiadores desta jornada de aprendizado e construção técnica.
+* **À minha família:** À minha **esposa, filhos, neto, nora e genro**, pelo apoio incondicional, paciência e amor que tornaram cada etapa possível.
+* **À Javanauta Academy e à mentora Angélica Weiler:** Pela base sólida, didática e incentivo para estruturar esta arquitetura de microsserviços em Java e Spring Boot.
