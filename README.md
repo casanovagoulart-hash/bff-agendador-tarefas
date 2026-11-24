@@ -1,5 +1,13 @@
 #  Ecossistema Agendador de Tarefas — Arquitetura de Microsserviços & Cibersegurança
 
+![Java](https://shields.io)
+![Spring Boot](https://shields.io)
+![Spring Security](https://shields.io)
+![PostgreSQL](https://shields.io)
+![MongoDB](https://shields.io)
+![Docker](https://shields.io)
+
+
 API Gateway / **BFF (Backend for Frontend)** desenvolvido em **Java 17** e **Spring Boot**, responsável por orquestrar um ecossistema distribuído de microsserviços para gestão de usuários, consulta de CEP, agendamento de tarefas e disparos automáticos de notificações por e-mail.
 
 Além das regras de negócio, este projeto atua como um **laboratório prático de DevSecOps e Cibersegurança**, implementando defesa em profundidade, auditoria forense de requisições e armadilhas ativas (*Honeypots*).
