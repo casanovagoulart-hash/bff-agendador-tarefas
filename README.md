@@ -1,20 +1,20 @@
-#  Ecossistema Agendador de Tarefas — Arquitetura de Microsserviços & Cibersegurança
+# 🚀 Ecossistema Agendador de Tarefas — Microsserviços, Cibersegurança & Agente de IA
 
 ![Java](https://shields.io)
 ![Spring Boot](https://shields.io)
+![Spring AI](https://shields.io)
 ![Spring Security](https://shields.io)
 ![PostgreSQL](https://shields.io)
 ![MongoDB](https://shields.io)
 ![Docker](https://shields.io)
 
+API Gateway / **BFF (Backend for Frontend)** desenvolvido em **Java 17** e **Spring Boot**, responsável por orquestrar um ecossistema distribuído de microsserviços para gestão de usuários, consulta de CEP, agendamento de tarefas, disparos automáticos de notificações por e-mail e **agendamento autônomo via Agente de Inteligência Artificial Generativa (Spring AI + Google Gemini)**.
 
-API Gateway / **BFF (Backend for Frontend)** desenvolvido em **Java 17** e **Spring Boot**, responsável por orquestrar um ecossistema distribuído de microsserviços para gestão de usuários, consulta de CEP, agendamento de tarefas e disparos automáticos de notificações por e-mail.
-
-Além das regras de negócio, este projeto atua como um **laboratório prático de DevSecOps e Cibersegurança**, implementando defesa em profundidade, auditoria forense de requisições e armadilhas ativas (*Honeypots*).
+Além das regras de negócio, este projeto atua como um **laboratório prático de DevSecOps e Cibersegurança**, implementando defesa em profundidade, política CORS estrita, auditoria forense de requisições e armadilhas ativas (*Honeypots*).
 
 ---
 
-##  Arquitetura do Sistema
+## 🏗️ Arquitetura do Sistema
 
 Toda a infraestrutura é containerizada e isolada em uma rede interna Docker (`backend-net`), expondo apenas a porta de entrada do BFF (`8083`) para o exterior:
 
@@ -24,9 +24,11 @@ Toda a infraestrutura é containerizada e isolada em uma rede interna Docker (`b
           ▼ (Porta 8083 - Única exposta)
 ┌──────────────────────────────────────────────────────────┐
 │                  BFF-AGENDADOR-TAREFAS                   │
+│  • CorsFilter (Whitelist Explícita de Origens)           │
 │  • SecurityAuditFilter (Log Forense + Anti-CRLF)         │
 │  • HoneypotController (Detecção de Scanners/Invasão)     │
 │  • JwtFilter (Validação Stateless HS512)                 │
+│  • AssistenteController + AgendaTools (Spring AI @Tool)  │──► [ Google Gemini API ]
 │  • CronService (@Scheduled a cada 5 min)                 │
 └──────┬──────────────────────┬─────────────────────┬──────┘
        │ OpenFeign            │ OpenFeign           │ OpenFeign
@@ -41,81 +43,79 @@ Toda a infraestrutura é containerizada e isolada em uma rede interna Docker (`b
 ```
 
 ### Microsserviços Integrados
-1. **`bff-agendador-tarefas` (Porta `8083`):** Orquestrador central, validação de tokens JWT, integração com ViaCEP, rotina agendada (`CronService`) e camada de defesa/auditoria.
+1. **`bff-agendador-tarefas` (Porta `8083`):** Orquestrador central, validação de tokens JWT, integração com ViaCEP, rotina agendada (`CronService`), **Agente de IA (`Spring AI`)** e camada de defesa/auditoria.
 2. **`usuariogradlegroovy` (Interna `8080`):** Cadastro, autenticação, geração de tokens JWT, criptografia de senhas (`BCrypt`) e persistência relacional no **PostgreSQL**.
 3. **`agendador-tarefas` (Interna `8081`):** Gerenciamento do ciclo de vida das tarefas (`PENDENTE` / `NOTIFICADO`) com persistência orientada a documentos no **MongoDB**.
 4. **`notificacao` (Interna `8082`):** Serviço dedicado ao envio transacional de e-mails via protocolo SMTP.
 
 ---
 
-## ️ Stack Tecnológica e Linguagens
+## 🤖 Arquitetura do Agente de IA Generativa (UML & Fluxo de Dados)
 
-* **Linguagens & Scripts:** Java 17, Groovy (Gradle DSL), SQL, PowerShell/Bash.
-* **Frameworks:** Spring Boot (3.x / 4.x), Spring Security, Spring Cloud OpenFeign, Spring Data JPA, Spring Data MongoDB.
-* **Bancos de Dados:** PostgreSQL 16 (Relacional) e MongoDB 7 (NoSQL).
-* **Infraestrutura & Build:** Docker, Docker Compose (Multi-stage builds com cache persistente), Maven e Gradle.
-* **Documentação:** SpringDoc OpenAPI 3 (Swagger UI).
+O endpoint `POST /assistente/chat` transforma solicitações em linguagem natural (ex: *"Agende início de férias para segunda-feira às 12:00"*) em ações reais no banco de dados utilizando **Function Calling (`@Tool`)** com o modelo **`gemini-4-hydrogen`**.
 
----
+### Diagrama UML de Sequência (Execução Agêntica)
 
-## ️ Camadas de Cibersegurança Implementadas
-
-* **Autenticação Stateless JWT (HS512):** Assinatura criptográfica HMAC-SHA512 utilizando chave mestre compartilhada de 512+ bits (128 caracteres Base64), conforme a **RFC 7518**, e tokens com expiração curta (1 hora).
-* **Prevenção contra IDOR (*Insecure Direct Object Reference*):** Endpoints sensíveis extraem a identidade do usuário diretamente do *Subject* do token JWT validado, impedindo manipulação de IDs ou e-mails via URL.
-* **Filtro de Auditoria Forense (`SecurityAuditFilter`):** Intercepta tentativas de acesso não autorizado (`401`) e proibido (`403`), registrando IP real de origem (`X-Forwarded-For`), rota alvo, credencial apresentada e `User-Agent`, com sanitização contra **Log Injection (CRLF)**.
-* **Armadilha Ativa (`HoneypotController`):** Endpoints isca ocultos da documentação (`@Hidden` em `/admin`, `/api/admin/backup`, `/.env`, `/actuator/env`) para detectar e registrar assinaturas de bots e scanners automatizados.
-* **Gestão Segura de Segredos (OPSEC):** Externalização total de credenciais via variáveis de ambiente (`.env` bloqueado no `.gitignore` + template seguro `.env.example`).
-
----
-
-## ️ Como Executar o Projeto (Docker Compose)
-
-### 1. Pré-requisitos
-* **Docker Desktop** instalado e em execução.
-* Repositórios irmãos clonados no mesmo diretório pai (`bff-agendador-tarefas`, `usuariogradlegroovy`, `agendador-tarefas`, `notificacao`).
-
-### 2. Configurar Variáveis de Ambiente
-Na raiz do `bff-agendador-tarefas`, copie o arquivo de modelo para `.env`:
-```powershell
-Copy-Item .env.example .env
+```text
+┌─────────┐      ┌─────────────────┐      ┌─────────────────┐      ┌──────────────────┐      ┌───────────────────┐
+│ Cliente │      │Filtros Security │      │AssistenteCtrl + │      │Google Gemini API │      │ AgendadorService  │
+│(Swagger)│      │(CORS/Audit/JWT) │      │ChatClient/Tools │      │(gemini-4-hydrogen│      │ (Feign + MongoDB) │
+└────┬────┘      └────────┬────────┘      └────────┬────────┘      └────────┬─────────┘      └─────────┬─────────┘
+     │                    │                        │                        │                          │
+     │ 1. POST /assistente/chat                    │                        │                          │
+     │    + Bearer Token + Prompt                  │                        │                          │
+     ├───────────────────►│                        │                        │                          │
+     │                    │ 2. Valida CORS, Audita │                        │                          │
+     │                    │    IP & JWT (HS512)    │                        │                          │
+     │                    ├───────────────────────►│                        │                          │
+     │                    │                        │ 3. Vincula AgendaTools │                          │
+     │                    │                        │    ao Token JWT atual  │                          │
+     │                    │                        │                        │                          │
+     │                    │                        │ 4. Prompt + Esquema    │                          │
+     │                    │                        │    das @Tools (HTTPS)  │                          │
+     │                    │                        ├───────────────────────►│                          │
+     │                    │                        │                        │                          │
+     │                    │                        │ 5. Tool Call:          │                          │
+     │                    │                        │    obterDataHoraAtual()│                          │
+     │                    │                        │◄───────────────────────┤                          │
+     │                    │                        │                        │                          │
+     │                    │                        │ 6. Data Atual          │                          │
+     │                    │                        │    (dd-MM-yyyy HH:mm)  │                          │
+     │                    │                        ├───────────────────────►│                          │
+     │                    │                        │                        │                          │
+     │                    │                        │ 7. Tool Call:          │                          │
+     │                    │                        │    criarTarefa(dados)  │                          │
+     │                    │                        │◄───────────────────────┤                          │
+     │                    │                        │                        │                          │
+     │                    │                        │ 8. POST /tarefas (OpenFeign + JWT)                │
+     │                    │                        ├──────────────────────────────────────────────────►│
+     │                    │                        │                        │                          │ 9. Grava
+     │                    │                        │                        │                          │    MongoDB
+     │                    │                        │ 10. TarefaDTOResponse (ID + Data)                 │
+     │                    │                        │◄──────────────────────────────────────────────────┤
+     │                    │                        │                        │                          │
+     │                    │                        │ 11. Retorno da Tool    │                          │
+     │                    │                        ├───────────────────────►│                          │
+     │                    │                        │                        │                          │
+     │                    │                        │ 12. Resposta Final     │                          │
+     │                    │                        │     em Português       │                          │
+     │                    │                        │◄───────────────────────┤                          │
+     │                    │                        │                        │                          │
+     │ 13. HTTP 200 OK + Confirmação Formatada     │                        │                          │
+     │◄───────────────────┴────────────────────────┘                        │                          │
 ```
 
-Gere uma chave secreta criptograficamente segura no PowerShell para a variável `JWT_SECRET`:
-```powershell
-\$bytes = New-Object byte[] 96; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes(\(bytes); [Convert]::ToBase64String(\)bytes)
-```
-Preencha o `.env` com a chave gerada, a senha do PostgreSQL, as credenciais SMTP do Gmail e o usuário do robô `CronService`.
+### Argumentação Técnica do Fluxo de Dados
 
-### 3. Subir os Containers
-```powershell
-docker compose up -d --build
-```
-
-### 4. Acessar a Documentação Interativa (Swagger UI)
-Abra no navegador:
- **`http://localhost:8083/swagger-ui/index.html`**
-
----
-
-##  Documentações Oficiais, Referências e Colaboração Técnica
-
-O desenvolvimento, diagnóstico e endurecimento (*hardening*) deste ecossistema contaram com as seguintes bases de conhecimento e suporte técnico:
-
-* **Assistência Arquitetural e Pair Programming com IA (Google):** Principal fonte de apoio técnico e diagnóstico contínuo durante todo o ciclo de desenvolvimento — desde a revisão de contratos DTO/OpenFeign, migração de propriedades no Spring Boot 4 e otimização de builds Docker, até a implementação das camadas de DevSecOps (`SecurityAuditFilter`, `HoneypotController` e proteção contra *Log Injection*).
-* **Spring Security & Spring Boot Reference Documentation:** Configuração de cadeias de filtros stateless (`SecurityFilterChain`), `OncePerRequestFilter`, ordem de precedência de filtros e propriedades de conexão (`spring.mongodb.uri`).
-* **Spring Cloud OpenFeign Documentation:** Comunicação declarativa entre microsserviços, propagação de cabeçalhos `Authorization` e tratamento de exceções HTTP via `ErrorDecoder`.
-* **MongoDB & Spring Data MongoDB Docs:** Modelagem de documentos, consultas por intervalo de datas (`LocalDateTime`) e conectividade em redes internas Docker.
-* **IETF RFC 7518 (JSON Web Algorithms) & JJWT Documentation:** Requisitos mínimos de tamanho de chave (≥ 512 bits) para algoritmos HMAC-SHA512 e prevenção contra `WeakKeyException`.
-* **OWASP Cheat Sheet Series (Logging, JWT & IDOR):** Boas práticas para ocultação de hashes de senha nos DTOs de resposta, sanitização de logs contra injeção de quebras de linha e controle de acesso baseado no token.
-* **Docker & Compose Official Docs:** Construção otimizada com *Multi-Stage Builds*, cache de dependências (`--mount=type=cache`) e isolamento de redes *bridge*.
-* **Comunidade Stack Overflow:** Consulta de cenários práticos envolvendo precedência de variáveis de ambiente no Windows/Docker, mapeamento Jackson/Lombok em DTOs e diagnóstico de rede entre containers.
-
----
-
-##  Agradecimentos
-
-> *"Com grande dificuldade, desafios e momentos frustrantes, mas com **GRATIDÃO A DEUS** pela fé, capacitação, discernimento, perseverança e resiliência, sustentados pelo amor de uma família maravilhosa."*
-
-* **A Deus:** Pela força, clareza e perseverança nos momentos mais desafiadores desta jornada de aprendizado e construção técnica.
-* **À minha família:** À minha **esposa, filhos, neto, nora e genro**, pelo apoio incondicional, paciência e amor que tornaram cada etapa possível.
-* **À Javanauta Academy e à mentora Angélica Weiler:** Pela base sólida, didática e incentivo para estruturar esta arquitetura de microsserviços em Java e Spring Boot.
+1. Barreira de Borda e Zero Trust (Passos 1 a 3): Antes de qualquer consumo de cota de IA, a requisição é validada por CorsFilter, 
+   SecurityAuditFilter e JwtFilter. O AssistenteController instancia AgendaTools vinculando-o exclusivamente ao tokenJwt da sessão atual, 
+   impedindo que tentativas de Prompt Injection criem ou consultem tarefas em nome de terceiros (Prevenção contra IDOR).
+2. Aterramento Temporal (Temporal Grounding, Passos 4 a 6): Como modelos de linguagem não possuem relógio interno em tempo real, 
+   o agente invoca obterDataHoraAtual() antes de criarTarefa(), eliminando alucinações de calendário e calculando expressões 
+   relativas ("amanhã", "segunda-feira") de forma determinística.
+3. Desacoplamento via BFF e Persistência Poliglota (Passos 7 a 10): O AgendaTools não acessa o banco diretamente; 
+   ele delega ao TarefaService via OpenFeign, garantindo que todas as validações de negócio e o ciclo posterior de disparo 
+   de e-mails (CronService + notificacao-service) ocorram normalmente.
+4. Resiliência e Tratamento Defensivo (Passos 11 a 13): A normalização de formatos de data e o tratamento explícito 
+   de exceções dentro das ferramentas evitam ciclos repetitivos de chamada (tool loops) e 
+   devolvem feedback claro ao usuário.
