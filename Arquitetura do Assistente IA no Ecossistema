@@ -1,0 +1,13 @@
+[ Usuário (Swagger / Front) ]
+       │  POST /assistente/chat ("Agende dentista amanhã às 10h")
+       ▼
+┌───────────────────────────────────────────────────────────┐
+│                  BFF-AGENDADOR-TAREFAS                    │
+│  1. AssistenteController (Valida JWT do usuário)          │
+│  2. ChatClient (Spring AI) ──► Envia prompt + @Tools      │
+│  3. Google Gemini (Decide qual ferramenta chamar)         │
+│  4. AgendaTools (@Tool) ──► Chama TarefaService           │
+└──────────────────────────┬────────────────────────────────┘
+                           │ OpenFeign
+                           ▼
+               [ agendador-service / MongoDB ]
